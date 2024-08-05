@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "917077220948",
+    "project_id": "ofc-group",
+    "storage_bucket": "ofc-group.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917077220948:android:9d4b8c306e2029c78897c1",
+        "android_client_info": {
+          "package_name": "com.example.ofcluxuryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmTTNmCrLa5b5KsRpav8s2uQWuXTESGYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
