@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ofcluxury_app/consts/consts.dart';
 import 'package:ofcluxury_app/consts/firebase_consts.dart';
-import 'package:ofcluxury_app/views/auth_screen/login_screen.dart';
+import 'package:ofcluxury_app/views/auth_screen/lets_you_in_screen.dart';
 import 'package:ofcluxury_app/views/home_screen/home.dart';
-import 'package:ofcluxury_app/views/widgets_common/applogo_widget.dart';
+import 'package:ofcluxury_app/views/onboarding_screen/welcome_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,15 +19,20 @@ class _SplashScreenState extends State<SplashScreen> {
   //creating a method to change screen
 
   changeScreen() {
-    Future.delayed(const Duration(seconds: 3), () {
-      //using getX
-      //Get.to(() => const LoginScreen());
+    Future.delayed(const Duration(seconds: 2), () async {
+      final prefs = await SharedPreferences.getInstance();
+      final hasSeenOnboarding = prefs.getBool(hasSeenOnboardingKey) ?? false;
 
       auth.authStateChanges().listen((User? user) {
-        if (user == null && mounted) {
-          Get.to(() => const LoginScreen());
+        if (!mounted) return;
+        if (user == null) {
+          if (hasSeenOnboarding) {
+            Get.off(() => const LetsYouInScreen());
+          } else {
+            Get.off(() => const WelcomeScreen());
+          }
         } else {
-          Get.to(() => const Home());
+          Get.off(() => const Home());
         }
       });
     });
@@ -40,24 +46,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: redColor,
+    return const Scaffold(
+      backgroundColor: whiteColor,
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Align(
-                alignment: Alignment.topLeft,
-                child: Image.asset(icSplashBg, width: 300)),
-            20.heightBox,
-            applogoWidget(),
-            10.heightBox,
-            appname.text.fontFamily(bold).size(22).white.make(),
-            5.heightBox,
-            appversion.text.white.make(),
-            const Spacer(),
-            credits.text.white.fontFamily(semibold).make(),
-            30.heightBox,
-            //our splash screen UI is completed...
+            Spacer(flex: 3),
+            Icon(Icons.time_to_leave_rounded, size: 110, color: darkFontGrey),
+            Spacer(flex: 4),
+            SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(primaryColor),
+              ),
+            ),
+            Spacer(flex: 1),
           ],
         ),
       ),

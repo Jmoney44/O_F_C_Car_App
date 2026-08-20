@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ofcluxury_app/consts/consts.dart';
 import 'package:ofcluxury_app/views/orders_screen/components/order_place_deatils.dart';
 import 'package:ofcluxury_app/views/orders_screen/components/order_status.dart';
+import 'package:ofcluxury_app/views/wallet_screen/e_receipt_screen.dart';
 import 'package:intl/intl.dart' as intl;
 
 class OrderDetails extends StatelessWidget {
@@ -15,38 +17,70 @@ class OrderDetails extends StatelessWidget {
       appBar: AppBar(
         title: "Order Details"
             .text
-            .fontFamily(semibold)
+            .fontFamily(bold)
             .color(darkFontGrey)
             .make(),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              final items = (data['orders'] as List);
+              final shippingCost = (data['shipping_cost'] as num?) ?? 0;
+              final taxAmount = (data['tax_amount'] as num?) ?? 0;
+              final totalAmount = (data['total_amount'] as num?) ?? 0;
+              Get.to(() => EReceiptScreen(
+                    imageUrl: items.isNotEmpty ? items[0]['img'] : null,
+                    itemTitle: items.isNotEmpty ? "${items[0]['title']}" : "Order",
+                    itemSubtitle: items.length > 1 ? "+ ${items.length - 1} more item(s)" : null,
+                    itemAmount: totalAmount - shippingCost - taxAmount,
+                    shippingAmount: shippingCost,
+                    taxAmount: taxAmount,
+                    totalAmount: totalAmount,
+                    paymentMethodLabel: "${data['payment_method']}",
+                    date: data['order_date'] != null
+                        ? intl.DateFormat("MMM d, yyyy | h:mm a").format(data['order_date'].toDate())
+                        : "",
+                    transactionId: "${data['order_code']}",
+                  ));
+            },
+            icon: const Icon(Icons.receipt_long_outlined, size: 18, color: darkFontGrey),
+            label: eReceipt.text.color(darkFontGrey).size(13).make(),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              orderStatus(
-                  color: redColor,
-                  icon: Icons.done,
-                  title: "Placed",
-                  showDone: data['order_placed']),
-              orderStatus(
-                  color: Colors.blue,
-                  icon: Icons.thumb_up,
-                  title: "Confirmed",
-                  showDone: data['order_confirmed']),
-              orderStatus(
-                  color: Colors.yellow,
-                  icon: Icons.car_crash,
-                  title: "On Delivery",
-                  showDone: data['order_on_delivery']),
-              orderStatus(
-                  color: Colors.purple,
-                  icon: Icons.done_all_rounded,
-                  title: "Delivered",
-                  showDone: data['order_delivered']),
-              const Divider(),
-              10.heightBox,
+              12.heightBox,
+              Container(
+                decoration: BoxDecoration(
+                  color: lightGrey,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    orderStatus(
+                        icon: Icons.done,
+                        title: "Placed",
+                        showDone: data['order_placed']),
+                    orderStatus(
+                        icon: Icons.thumb_up_outlined,
+                        title: "Confirmed",
+                        showDone: data['order_confirmed']),
+                    orderStatus(
+                        icon: Icons.local_shipping_outlined,
+                        title: "On Delivery",
+                        showDone: data['order_on_delivery']),
+                    orderStatus(
+                        icon: Icons.done_all_rounded,
+                        title: "Delivered",
+                        showDone: data['order_delivered']),
+                  ],
+                ).box.padding(const EdgeInsets.symmetric(horizontal: 8, vertical: 4)).make(),
+              ),
+              16.heightBox,
               Column(
                 children: [
                   orderPlaceDetails(
@@ -64,8 +98,12 @@ class OrderDetails extends StatelessWidget {
                     title2: "Payment Method",
                   ),
                   orderPlaceDetails(
-                    d1: "Unpaid",
-                    d2: "Order Placed",
+                    d1: data['order_confirmed'] == true ? "Paid" : "Unpaid",
+                    d2: data['order_delivered'] == true
+                        ? "Delivered"
+                        : data['order_on_delivery'] == true
+                            ? "On Delivery"
+                            : "Order Placed",
                     title1: "Payment Status",
                     title2: "Delivery Status",
                   ),
@@ -74,18 +112,17 @@ class OrderDetails extends StatelessWidget {
                         horizontal: 16.0, vertical: 8),
                     child: Row(
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            "Shipping Address".text.fontFamily(semibold).make(),
-                            "${data['order_by_name']}".text.make(),
-                            "${data['order_by_email']}".text.make(),
-                            "${data['order_by_address']}".text.make(),
-                            "${data['order_by_city']}".text.make(),
-                            "${data['order_by_state']}".text.make(),
-                            "${data['order_by_phone']}".text.make(),
-                            "${data['order_by_postalcode']}".text.make()
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              "Shipping Address".text.fontFamily(semibold).color(darkFontGrey).make(),
+                              4.heightBox,
+                              "${data['order_by_name']}".text.color(fontGrey).make(),
+                              "${data['order_by_email']}".text.color(fontGrey).make(),
+                              "${data['order_by_address']}".text.color(fontGrey).make(),
+                            ],
+                          ),
                         ),
                         SizedBox(
                           width: 130,
@@ -93,10 +130,11 @@ class OrderDetails extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              "Total Amount".text.fontFamily(semibold).make(),
+                              "Total Amount".text.fontFamily(semibold).color(darkFontGrey).make(),
+                              4.heightBox,
                               "${data['total_amount']}"
                                   .text
-                                  .color(redColor)
+                                  .color(darkFontGrey)
                                   .fontFamily(bold)
                                   .make(),
                             ],
@@ -106,16 +144,15 @@ class OrderDetails extends StatelessWidget {
                     ),
                   ),
                 ],
-              ).box.outerShadowMd.white.make(),
-              const Divider(),
-              10.heightBox,
+              ).box.color(lightGrey).withRounded(value: 16).make(),
+              20.heightBox,
               "Ordered Product"
                   .text
                   .size(16)
                   .color(darkFontGrey)
-                  .fontFamily(semibold)
-                  .makeCentered(),
-              10.heightBox,
+                  .fontFamily(bold)
+                  .make(),
+              12.heightBox,
               ListView(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
@@ -124,26 +161,29 @@ class OrderDetails extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       orderPlaceDetails(
-                          title1: data['order'][index]['title'],
-                          title2: data['order'][index]['tprice'],
-                          d1: "${data['order'][index]['qty']}x",
+                          title1: data['orders'][index]['title'],
+                          title2: data['orders'][index]['tprice'],
+                          d1: "${data['orders'][index]['qty']}x",
                           d2: "Refundable"),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Container(
                           width: 30,
                           height: 20,
-                          color: Color(data['orders'][index]['color']),
+                          decoration: BoxDecoration(
+                            color: Color(data['orders'][index]['color']),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
                         ),
                       ),
-                      const Divider(),
+                      12.heightBox,
                     ],
                   );
                 }).toList(),
               )
                   .box
-                  .outerShadowMd
-                  .white
+                  .color(lightGrey)
+                  .withRounded(value: 16)
                   .margin(const EdgeInsets.only(bottom: 4))
                   .make(),
               20.heightBox,

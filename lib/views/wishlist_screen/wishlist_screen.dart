@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ofcluxury_app/consts/consts.dart';
-import 'package:ofcluxury_app/consts/firebase_consts.dart';
 import 'package:ofcluxury_app/services/firestore_services.dart';
+import 'package:ofcluxury_app/views/category_screen/item_details.dart';
 import 'package:ofcluxury_app/views/widgets_common/loading_indicator.dart';
+import 'package:ofcluxury_app/views/widgets_common/product_card.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -14,7 +16,7 @@ class WishlistScreen extends StatelessWidget {
       backgroundColor: whiteColor,
       appBar: AppBar(
         title:
-            "My Wishlist".text.color(darkFontGrey).fontFamily(semibold).make(),
+            "My Wishlist".text.color(darkFontGrey).fontFamily(bold).make(),
       ),
       body: StreamBuilder(
         stream: FirestoreServices.getWishlists(),
@@ -24,50 +26,38 @@ class WishlistScreen extends StatelessWidget {
               child: loadingIndicator(),
             );
           } else if (snapshot.data!.docs.isEmpty) {
-            return "No Wishlist yet!".text.color(darkFontGrey).makeCentered();
+            return "No Wishlist yet!".text.color(fontGrey).makeCentered();
           } else {
             var data = snapshot.data!.docs;
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        leading: Image.network(
-                          "${data[index]['p_imgs'][0]}",
-                          width: 80,
-                          fit: BoxFit.cover,
-                        ),
-                        title: "${data[index]['p_name']}"
-                            .text
-                            .fontFamily(semibold)
-                            .size(16)
-                            .make(),
-                        subtitle: "${data[index]['p_price']}"
-                            .numCurrency
-                            .text
-                            .color(redColor)
-                            .fontFamily(semibold)
-                            .make(),
-                        trailing: const Icon(
-                          Icons.favorite,
-                          color: redColor,
-                        ).onTap(() async {
-                          await firestore
-                              .collection(productsCollection)
-                              .doc(data[index].id)
-                              .set({
-                            'p_wishlist':
-                                FieldValue.arrayRemove([currentUser!.uid])
-                          }, SetOptions(merge: true));
-                        }),
-                      );
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: GridView.builder(
+                shrinkWrap: true,
+                itemCount: data.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    mainAxisExtent: 240),
+                itemBuilder: (BuildContext context, int index) {
+                  final doc = data[index];
+                  return ProductCard(
+                    imageUrl: doc['p_imgs'][0],
+                    title: "${doc['p_name']}",
+                    price: "${doc['p_price']}".numCurrency,
+                    isFavorite: true,
+                    onFavoriteToggle: () {
+                      FirestoreServices.toggleWishlist(doc.id, true);
                     },
-                  ),
-                ),
-              ],
+                    onTap: () {
+                      Get.to(() => ItemDetails(
+                            title: "${doc['p_name']}",
+                            data: doc,
+                          ));
+                    },
+                  );
+                },
+              ),
             );
           }
         },

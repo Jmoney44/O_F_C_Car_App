@@ -46,13 +46,18 @@ class ProfileController extends GetxController {
     isloading(false);
   }
 
-  changeAuthPassword({email, password, newpassword}) async {
+  /// Returns true on success, false if reauthentication/update failed
+  /// (e.g. wrong old password) — the caller decides how to report it,
+  /// instead of this silently doing nothing on failure.
+  Future<bool> changeAuthPassword({email, password, newpassword}) async {
     final cred = EmailAuthProvider.credential(email: email, password: password);
-
-    await currentUser!.reauthenticateWithCredential(cred).then((value) {
-      currentUser!.updatePassword(newpassword);
-    }).catchError((error) {
-    });
+    try {
+      await currentUser!.reauthenticateWithCredential(cred);
+      await currentUser!.updatePassword(newpassword);
+      return true;
+    } on FirebaseAuthException {
+      return false;
+    }
   }
 
 }

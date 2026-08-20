@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ofcluxury_app/consts/firebase_consts.dart';
 
 class FirestoreServices {
@@ -77,5 +78,75 @@ class FirestoreServices {
 
   static searchProducts(title){
     return firestore.collection(productsCollection).get();
+  }
+
+  //toggle a product's wishlist membership for the current user
+  static Future<void> toggleWishlist(String docId, bool isCurrentlyFav) {
+    return firestore.collection(productsCollection).doc(docId).set({
+      'p_wishlist': isCurrentlyFav
+          ? FieldValue.arrayRemove([currentUser!.uid])
+          : FieldValue.arrayUnion([currentUser!.uid])
+    }, SetOptions(merge: true));
+  }
+
+  static bool isInWishlist(dynamic data) {
+    final list = (data.data() as Map<String, dynamic>)['p_wishlist'];
+    return list is List && list.contains(currentUser!.uid);
+  }
+
+  static CollectionReference _userAddresses() =>
+      firestore.collection(usersCollection).doc(currentUser!.uid).collection(addressesCollection);
+
+  static getAddresses() => _userAddresses().snapshots();
+
+  static Future<void> addAddress({
+    required String label,
+    required String details,
+    required bool isDefault,
+  }) async {
+    if (isDefault) {
+      final existing = await _userAddresses().get();
+      for (final doc in existing.docs) {
+        await doc.reference.update({'isDefault': false});
+      }
+    }
+    await _userAddresses().add({'label': label, 'details': details, 'isDefault': isDefault});
+  }
+
+  static CollectionReference _userCards() =>
+      firestore.collection(usersCollection).doc(currentUser!.uid).collection(cardsCollection);
+
+  static getCards() => _userCards().snapshots();
+
+  static Future<void> addCard({
+    required String cardName,
+    required String last4,
+    required String brand,
+    required String expiry,
+  }) {
+    return _userCards().add({
+      'cardName': cardName,
+      'last4': last4,
+      'brand': brand,
+      'expiry': expiry,
+    });
+  }
+
+  static Future<void> addReview({
+    required String productId,
+    required String comment,
+    required int rating,
+  }) {
+    return firestore
+        .collection(productsCollection)
+        .doc(productId)
+        .collection(reviewsCollection)
+        .add({
+      'user_name': currentUser?.displayName ?? currentUser?.email ?? 'User',
+      'uid': currentUser!.uid,
+      'rating': rating,
+      'comment': comment,
+      'created_on': FieldValue.serverTimestamp(),
+    });
   }
 }

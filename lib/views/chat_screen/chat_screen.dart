@@ -18,72 +18,89 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
-        title: "${controller.friendName}".text.fontFamily(semibold).color(darkFontGrey).make(),
+        title: "${controller.friendName}".text.fontFamily(bold).color(darkFontGrey).make(),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Obx(
-              ()=> controller.isLoading.value 
-              ? Center(
-                  child: loadingIndicator(),
-                ) 
-                : Expanded(
-                  child: StreamBuilder(
-                    stream: FirestoreServices.getChatMessages(controller.chatDocId.toString()),
-                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: loadingIndicator(),
-                        );
-                      } else if (snapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: "Send a message...".text.color(darkFontGrey).make(),
-                        );
-                      } else {
-                        return ListView(
-                          children: snapshot.data!.docs.mapIndexed((currentValue, index) {
-                            var data = snapshot.data!.docs[index];
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              Obx(
+                ()=> controller.isLoading.value
+                ? Center(
+                    child: loadingIndicator(),
+                  )
+                  : Expanded(
+                    child: StreamBuilder(
+                      stream: FirestoreServices.getChatMessages(controller.chatDocId.toString()),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: loadingIndicator(),
+                          );
+                        } else if (snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: "Send a message...".text.color(fontGrey).make(),
+                          );
+                        } else {
+                          return ListView(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            children: snapshot.data!.docs.mapIndexed((currentValue, index) {
+                              var data = snapshot.data!.docs[index];
 
-                            return Align(
-                              alignment: 
-                                data['uid'] == currentUser!.uid ? Alignment.centerRight : Alignment.centerLeft,
-                              child: senderBubble(data));
-                          }).toList(),
-                        );
-                      }
-                    },
-                  ),
+                              return Align(
+                                alignment:
+                                  data['uid'] == currentUser!.uid ? Alignment.centerRight : Alignment.centerLeft,
+                                child: senderBubble(data));
+                            }).toList(),
+                          );
+                        }
+                      },
+                    ),
+                ),
               ),
-            ),
-            10.heightBox,
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                  controller: controller.msgController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: textfieldGrey,
-                      )),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: textfieldGrey,
-                        )),
-                    hintText: "Type a message...",
-                  ),
-                )),
-                IconButton(
-                  onPressed: () {
-                    controller.sendMsg(controller.msgController.text);
-                    controller.msgController.clear();
-                  }, 
-                  icon: const Icon(Icons.send, color: redColor)),
-              ],
-            ).box.height(80).padding(const EdgeInsets.all(12)).margin(const EdgeInsets.only(bottom: 8)).make(),
-          ],
+              10.heightBox,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: lightGrey,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: controller.msgController,
+                        style: TextStyle(fontFamily: regular, color: darkFontGrey),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Message...",
+                          hintStyle: TextStyle(fontFamily: regular, color: fontGrey),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          controller.sendMsg(controller.msgController.text);
+                          controller.msgController.clear();
+                        },
+                        icon: const Icon(Icons.arrow_upward_rounded, color: whiteColor, size: 18),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              12.heightBox,
+            ],
+          ),
         ),
       ),
     );

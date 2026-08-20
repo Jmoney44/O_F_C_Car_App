@@ -5,11 +5,17 @@ import 'package:ofcluxury_app/consts/consts.dart';
 import 'package:ofcluxury_app/consts/lists.dart';
 import 'package:ofcluxury_app/controllers/home_controller.dart';
 import 'package:ofcluxury_app/services/firestore_services.dart';
+import 'package:ofcluxury_app/views/cart_screen/cart_screen.dart';
+import 'package:ofcluxury_app/views/category_screen/category_screen.dart';
 import 'package:ofcluxury_app/views/category_screen/item_details.dart';
 import 'package:ofcluxury_app/views/home_screen/components/featured_button.dart';
+import 'package:ofcluxury_app/views/home_screen/notification_screen.dart';
 import 'package:ofcluxury_app/views/home_screen/search_screen.dart';
+import 'package:ofcluxury_app/views/wishlist_screen/wishlist_screen.dart';
 import 'package:ofcluxury_app/views/widgets_common/home_buttons.dart';
 import 'package:ofcluxury_app/views/widgets_common/loading_indicator.dart';
+import 'package:ofcluxury_app/views/widgets_common/product_card.dart';
+import 'package:ofcluxury_app/views/widgets_common/section_header.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,336 +24,283 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var controller = Get.find<HomeController>();
     return Container(
-      padding: const EdgeInsets.all(12),
-      color: lightGrey,
+      color: whiteColor,
       width: context.screenWidth,
       height: context.screenHeight,
       child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            height: 60,
-            color: lightGrey,
-            child: TextFormField(
-              controller: controller.searchController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                suffixIcon: const Icon(Icons.search).onTap(() {
-                  if (controller.searchController.text.isNotEmptyAndNotNull) {
-                    Get.to(() => SearchScreen(
-                          title: controller.searchController.text,
-                        ));
-                  }
-                }),
-                filled: true,
-                fillColor: whiteColor,
-                hintText: searchanything,
-                hintStyle: const TextStyle(color: textfieldGrey),
-              ),
-            ).box.outerShadowSm.make(),
-          ),
-          10.heightBox,
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
+            children: [
+              10.heightBox,
+              //greeting row
+              Row(
                 children: [
-                  //swipers brands
-                  VxSwiper.builder(
-                      aspectRatio: 16 / 9,
-                      autoPlay: true,
-                      height: 150,
-                      enlargeCenterPage: true,
-                      itemCount: slidersList.length,
-                      itemBuilder: (context, index) {
-                        return Image.asset(
-                          slidersList[index],
-                          fit: BoxFit.fill,
-                        )
-                            .box
-                            .rounded
-                            .clip(Clip.antiAlias)
-                            .margin(const EdgeInsets.symmetric(horizontal: 8))
-                            .make();
-                      }),
-
-                  10.heightBox,
-                  //deals buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                        2,
-                        (index) => homeButtons(
-                              height: context.screenHeight * 0.15,
-                              width: context.screenWidth / 2.5,
-                              icon: index == 0 ? icTodaysDeal : icFlashDeal,
-                              title: index == 0 ? todayDeal : flashsale,
-                            )),
-                  ),
-
-                  //2nd swiper
-                  20.heightBox,
-                  //swipers brands
-                  VxSwiper.builder(
-                      aspectRatio: 16 / 9,
-                      autoPlay: true,
-                      height: 150,
-                      enlargeCenterPage: true,
-                      itemCount: secondSlidersList.length,
-                      itemBuilder: (context, index) {
-                        return Image.asset(
-                          secondSlidersList[index],
-                          fit: BoxFit.fill,
-                        )
-                            .box
-                            .rounded
-                            .clip(Clip.antiAlias)
-                            .margin(const EdgeInsets.symmetric(horizontal: 8))
-                            .make();
-                      }),
-
-                  //category buttons
-                  20.heightBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                        3,
-                        (index) => homeButtons(
-                              height: context.screenHeight * 0.15,
-                              width: context.screenWidth / 3.5,
-                              icon: index == 0
-                                  ? icTopCategories
-                                  : index == 1
-                                      ? icBrands
-                                      : icTopSeller,
-                              title: index == 0
-                                  ? topCategories
-                                  : index == 1
-                                      ? brand
-                                      : topSellers,
-                            )),
-                  ),
-
-                  //featured categories
-
-                  20.heightBox,
-
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: featuredCategories.text
-                          .color(darkFontGrey)
-                          .size(18)
-                          .fontFamily(semibold)
-                          .make()),
-                  20.heightBox,
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(
-                        3,
-                        (index) => Column(
-                          children: [
-                            featuredButton(
-                                icon: featuredImages1[index],
-                                title: featuredTitles1[index]),
-                            10.heightBox,
-                            featuredButton(
-                                icon: featuredImages2[index],
-                                title: featuredTitles2[index]),
-                          ],
-                        ),
-                      ).toList(),
-                    ),
-                  ),
-
-                  //featured product
-
-                  20.heightBox,
-
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    width: double.infinity,
-                    decoration: const BoxDecoration(color: redColor),
+                    width: 44,
+                    height: 44,
+                    decoration: const BoxDecoration(
+                      color: lightGrey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.person, color: fontGrey),
+                  ),
+                  12.widthBox,
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        featuredProduct.text.white
+                        "Good day 👋".text.color(fontGrey).size(13).make(),
+                        (controller.username.isEmpty ? appname : controller.username)
+                            .text
                             .fontFamily(bold)
-                            .size(18)
+                            .size(16)
+                            .color(darkFontGrey)
                             .make(),
-                        10.heightBox,
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: FutureBuilder(
-                              future: FirestoreServices.getFeaturedProducts(),
-                              builder: (context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Center(
-                                    child: loadingIndicator(),
-                                  );
-                                } else if (snapshot.data!.docs.isEmpty) {
-                                  return "No featured products"
-                                      .text
-                                      .white
-                                      .makeCentered();
-                                } else {
-                                  var featuredData = snapshot.data!.docs;
-
-                                  return Row(
-                                    children: List.generate(
-                                      featuredData.length,
-                                      (index) => Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Image.network(
-                                            featuredData[index]['p_imgs'][0],
-                                            width: 130,
-                                            height: 130,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          10.heightBox,
-                                          "${featuredData[index]['p_name']}"
-                                              .text
-                                              .fontFamily(semibold)
-                                              .color(darkFontGrey)
-                                              .make(),
-                                          10.heightBox,
-                                          "${featuredData[index]['p_price']}"
-                                              .numCurrency
-                                              .text
-                                              .color(redColor)
-                                              .fontFamily(bold)
-                                              .size(16)
-                                              .make(),
-                                          10.heightBox,
-                                        ],
-                                      )
-                                          .box
-                                          .white
-                                          .margin(const EdgeInsets.symmetric(
-                                              horizontal: 4))
-                                          .roundedSM
-                                          .padding(const EdgeInsets.all(8))
-                                          .make()
-                                          .onTap(() {
-                                        Get.to(() => ItemDetails(
-                                              title:
-                                                  "${featuredData[index]['p_name']}",
-                                              data: featuredData[index],
-                                            ));
-                                      }),
-                                    ),
-                                  );
-                                }
-                              }),
-                        ),
                       ],
                     ),
                   ),
-
-                  //third swiper
-                  20.heightBox,
-                  //swipers brands
-                  VxSwiper.builder(
-                      aspectRatio: 16 / 9,
-                      autoPlay: true,
-                      height: 150,
-                      enlargeCenterPage: true,
-                      itemCount: secondSlidersList.length,
-                      itemBuilder: (context, index) {
-                        return Image.asset(
-                          secondSlidersList[index],
-                          fit: BoxFit.fill,
-                        )
-                            .box
-                            .rounded
-                            .clip(Clip.antiAlias)
-                            .margin(const EdgeInsets.symmetric(horizontal: 8))
-                            .make();
-                      }),
-
-                  //all products section
-                  20.heightBox,
-
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: allproducts.text
-                          .fontFamily(bold)
-                          .color(darkFontGrey)
-                          .size(18)
-                          .make()),
-                  20.heightBox,
-                  StreamBuilder(
-                    stream: FirestoreServices.allproducts(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return loadingIndicator();
-                      } else {
-                        var allproductsdata = snapshot.data!.docs;
-                        return GridView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: allproductsdata.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 8,
-                                    crossAxisSpacing: 8,
-                                    mainAxisExtent: 300),
-                            itemBuilder: (context, index) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.network(
-                                    allproductsdata[index]['p_imgs'][0],
-                                    height: 200,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  const Spacer(),
-                                  "${allproductsdata[index]['p_name']}"
-                                      .text
-                                      .fontFamily(semibold)
-                                      .color(darkFontGrey)
-                                      .make(),
-                                  10.heightBox,
-                                  "${allproductsdata[index]['p_price']}"
-                                      .text
-                                      .color(redColor)
-                                      .fontFamily(bold)
-                                      .size(16)
-                                      .make(),
-                                  10.heightBox,
-                                ],
-                              )
-                                  .box
-                                  .white
-                                  .margin(
-                                      const EdgeInsets.symmetric(horizontal: 4))
-                                  .roundedSM
-                                  .padding(const EdgeInsets.all(12))
-                                  .make()
-                                  .onTap(() {
-                                Get.to(() => ItemDetails(
-                                      title:
-                                          "${allproductsdata[index]['p_name']}",
-                                      data: allproductsdata[index],
-                                    ));
-                              });
-                            });
-                      }
-                    },
-                  ),
+                  Icon(Icons.notifications_none_rounded, color: darkFontGrey).onTap(() {
+                    Get.to(() => const NotificationScreen());
+                  }),
+                  16.widthBox,
+                  Icon(Icons.favorite_border, color: darkFontGrey).onTap(() {
+                    Get.to(() => const WishlistScreen());
+                  }),
+                  16.widthBox,
+                  Icon(Icons.shopping_cart_outlined, color: darkFontGrey).onTap(() {
+                    Get.to(() => const CartScreen());
+                  }),
                 ],
               ),
-            ),
+              16.heightBox,
+              //search bar
+              Container(
+                height: 54,
+                decoration: BoxDecoration(
+                  color: lightGrey,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextFormField(
+                  controller: controller.searchController,
+                  style: TextStyle(fontFamily: regular, color: darkFontGrey),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    prefixIcon: const Icon(Icons.search, color: fontGrey),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.tune_rounded, color: whiteColor, size: 18),
+                      ),
+                    ).onTap(() {
+                      if (controller.searchController.text.isNotEmptyAndNotNull) {
+                        Get.to(() => SearchScreen(
+                              title: controller.searchController.text,
+                            ));
+                      }
+                    }),
+                    hintText: searchanything,
+                    hintStyle: TextStyle(fontFamily: regular, color: fontGrey),
+                  ),
+                ),
+              ),
+              14.heightBox,
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //promo swiper
+                      VxSwiper.builder(
+                          aspectRatio: 16 / 9,
+                          autoPlay: true,
+                          height: 150,
+                          enlargeCenterPage: true,
+                          itemCount: slidersList.length,
+                          itemBuilder: (context, index) {
+                            return Image.asset(
+                              slidersList[index],
+                              fit: BoxFit.cover,
+                            )
+                                .box
+                                .withRounded(value: 20)
+                                .color(lightGrey)
+                                .clip(Clip.antiAlias)
+                                .margin(const EdgeInsets.symmetric(horizontal: 8))
+                                .make();
+                          }),
+
+                      20.heightBox,
+                      //deals tiles
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                            2,
+                            (index) => homeButtons(
+                                  height: context.screenHeight * 0.13,
+                                  width: context.screenWidth / 2.5,
+                                  icon: index == 0 ? icTodaysDeal : icFlashDeal,
+                                  title: index == 0 ? todayDeal : flashsale,
+                                )),
+                      ),
+
+                      20.heightBox,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                            3,
+                            (index) => homeButtons(
+                                  height: context.screenHeight * 0.13,
+                                  width: context.screenWidth / 3.5,
+                                  icon: index == 0
+                                      ? icTopCategories
+                                      : index == 1
+                                          ? icBrands
+                                          : icTopSeller,
+                                  title: index == 0
+                                      ? topCategories
+                                      : index == 1
+                                          ? brand
+                                          : topSellers,
+                                  onPress: index == 0
+                                      ? () => Get.to(() => const CategoryScreen())
+                                      : null,
+                                )),
+                      ),
+
+                      24.heightBox,
+                      sectionHeader(title: featuredCategories),
+                      16.heightBox,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(
+                            3,
+                            (index) => Column(
+                              children: [
+                                featuredButton(
+                                    icon: featuredImages1[index],
+                                    title: featuredTitles1[index]),
+                                10.heightBox,
+                                featuredButton(
+                                    icon: featuredImages2[index],
+                                    title: featuredTitles2[index]),
+                              ],
+                            ),
+                          ).toList(),
+                        ),
+                      ),
+
+                      24.heightBox,
+                      sectionHeader(title: featuredProduct),
+                      16.heightBox,
+                      SizedBox(
+                        height: 210,
+                        child: FutureBuilder(
+                            future: FirestoreServices.getFeaturedProducts(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: loadingIndicator(),
+                                );
+                              } else if (snapshot.data!.docs.isEmpty) {
+                                return "No featured products"
+                                    .text
+                                    .color(fontGrey)
+                                    .makeCentered();
+                              } else {
+                                var featuredData = snapshot.data!.docs;
+
+                                return ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: featuredData.length,
+                                  separatorBuilder: (_, __) => 12.widthBox,
+                                  itemBuilder: (context, index) {
+                                    final doc = featuredData[index];
+                                    return SizedBox(
+                                      width: 160,
+                                      child: ProductCard(
+                                        imageUrl: doc['p_imgs'][0],
+                                        title: "${doc['p_name']}",
+                                        price: "${doc['p_price']}".numCurrency,
+                                        isFavorite: FirestoreServices.isInWishlist(doc),
+                                        onFavoriteToggle: () {
+                                          FirestoreServices.toggleWishlist(
+                                              doc.id, FirestoreServices.isInWishlist(doc));
+                                        },
+                                        onTap: () {
+                                          Get.to(() => ItemDetails(
+                                                title: "${doc['p_name']}",
+                                                data: doc,
+                                              ));
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            }),
+                      ),
+
+                      24.heightBox,
+                      sectionHeader(title: allproducts),
+                      16.heightBox,
+                      StreamBuilder(
+                        stream: FirestoreServices.allproducts(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData) {
+                            return loadingIndicator();
+                          } else {
+                            var allproductsdata = snapshot.data!.docs;
+                            return GridView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: allproductsdata.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        mainAxisSpacing: 12,
+                                        crossAxisSpacing: 12,
+                                        mainAxisExtent: 240),
+                                itemBuilder: (context, index) {
+                                  final doc = allproductsdata[index];
+                                  return ProductCard(
+                                    imageUrl: doc['p_imgs'][0],
+                                    title: "${doc['p_name']}",
+                                    price: "${doc['p_price']}".numCurrency,
+                                    isFavorite: FirestoreServices.isInWishlist(doc),
+                                    onFavoriteToggle: () {
+                                      FirestoreServices.toggleWishlist(
+                                          doc.id, FirestoreServices.isInWishlist(doc));
+                                    },
+                                    onTap: () {
+                                      Get.to(() => ItemDetails(
+                                            title: "${doc['p_name']}",
+                                            data: doc,
+                                          ));
+                                    },
+                                  );
+                                });
+                          }
+                        },
+                      ),
+                      20.heightBox,
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      )),
+        ),
+      ),
     );
   }
 }

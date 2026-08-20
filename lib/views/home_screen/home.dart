@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ofcluxury_app/consts/consts.dart';
 import 'package:ofcluxury_app/controllers/home_controller.dart';
-import 'package:ofcluxury_app/views/cart_screen/cart_screen.dart';
-import 'package:ofcluxury_app/views/category_screen/category_screen.dart';
 import 'package:ofcluxury_app/views/home_screen/home_screen.dart';
+import 'package:ofcluxury_app/views/home_screen/inbox_screen.dart';
+import 'package:ofcluxury_app/views/orders_screen/orders_screen.dart';
 import 'package:ofcluxury_app/views/profile_screen/profile_screen.dart';
+import 'package:ofcluxury_app/views/wallet_screen/wallet_screen.dart';
 import 'package:ofcluxury_app/views/widgets_common/exit_dialog.dart';
 
 class Home extends StatelessWidget {
@@ -16,22 +17,20 @@ class Home extends StatelessWidget {
     //init home controller
     var controller = Get.put(HomeController());
 
-    var navbarItem = [
-      BottomNavigationBarItem(
-          icon: Image.asset(icHome, width: 26), label: home),
-      BottomNavigationBarItem(
-          icon: Image.asset(icCategories, width: 26), label: categories),
-      BottomNavigationBarItem(
-          icon: Image.asset(icCart, width: 26), label: cart),
-      BottomNavigationBarItem(
-          icon: Image.asset(icProfile, width: 26), label: account)
+    var navbarItem = const [
+      BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: home),
+      BottomNavigationBarItem(icon: Icon(Icons.receipt_long_rounded), label: orders),
+      BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline_rounded), label: inbox),
+      BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), label: myWallet),
+      BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: account),
     ];
 
-    var navBody = [
-      const HomeScreen(),
-      const CategoryScreen(),
-      const CartScreen(),
-      const ProfileScreen(),
+    var navBody = const [
+      HomeScreen(),
+      OrdersScreen(),
+      InboxScreen(),
+      WalletScreen(),
+      ProfileScreen(),
     ];
 
     // ignore: deprecated_member_use
@@ -44,6 +43,7 @@ class Home extends StatelessWidget {
         return false;
       },
       child: Scaffold(
+        backgroundColor: whiteColor,
         body: Column(
           children: [
             Obx(
@@ -52,17 +52,26 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
-        bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            currentIndex: controller.currentNavIndex.value,
-            selectedItemColor: redColor,
-            selectedLabelStyle: const TextStyle(fontFamily: semibold),
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: whiteColor,
-            items: navbarItem,
-            onTap: (value) {
-              controller.currentNavIndex.value = value;
-            },
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            color: whiteColor,
+            border: Border(top: BorderSide(color: textfieldGrey, width: 1)),
+          ),
+          child: Obx(
+            () => BottomNavigationBar(
+              currentIndex: controller.currentNavIndex.value,
+              selectedItemColor: primaryColor,
+              unselectedItemColor: fontGrey,
+              selectedLabelStyle: TextStyle(fontFamily: semibold, fontSize: 11),
+              unselectedLabelStyle: TextStyle(fontFamily: regular, fontSize: 11),
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: whiteColor,
+              elevation: 0,
+              items: navbarItem,
+              onTap: (value) {
+                controller.currentNavIndex.value = value;
+              },
+            ),
           ),
         ),
       ),

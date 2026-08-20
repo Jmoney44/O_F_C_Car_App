@@ -5,39 +5,43 @@ import 'package:ofcluxury_app/views/widgets_common/our_button.dart';
 
 Widget exitDialog(context) {
   return Dialog(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    backgroundColor: whiteColor,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         "Confirm".text.fontFamily(bold).size(18).color(darkFontGrey).make(),
-        const Divider(),
-        10.heightBox,
+        8.heightBox,
         "Are you sure you want to exit?"
             .text
-            .size(16)
-            .color(darkFontGrey)
+            .size(15)
+            .color(fontGrey)
             .make(),
-        10.heightBox,
+        20.heightBox,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ourButton(
-                color: redColor,
-                onPress: () {
-                  SystemNavigator.pop();
-                },
-                textColor: whiteColor,
-                title: "Yes"),
-            ourButton(
-                color: redColor,
-                onPress: () {
-                  Navigator.pop(context);
-                },
-                textColor: whiteColor,
-                title: "No"),
+            Expanded(
+              child: ourButton(
+                  outlined: true,
+                  color: darkFontGrey,
+                  onPress: () {
+                    Navigator.pop(context);
+                  },
+                  title: "No"),
+            ),
+            12.widthBox,
+            Expanded(
+              child: ourButton(
+                  color: primaryColor,
+                  onPress: () {
+                    SystemNavigator.pop();
+                  },
+                  textColor: whiteColor,
+                  title: "Yes"),
+            ),
           ],
         ),
       ],
-    ).box.color(lightGrey).padding(const EdgeInsets.all(12)).roundedSM.make(),
+    ).box.padding(const EdgeInsets.all(20)).make(),
   );
 }

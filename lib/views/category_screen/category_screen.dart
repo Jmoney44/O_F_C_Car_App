@@ -16,23 +16,28 @@ class CategoryScreen extends StatelessWidget {
     return bgWidget(
         child: Scaffold(
           appBar: AppBar(
-            title: categories.text.fontFamily(bold).white.make(),
+            title: categories.text.fontFamily(bold).color(darkFontGrey).make(),
           ),
           body: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: GridView.builder(
                 shrinkWrap: true,
                 itemCount: 9,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, mainAxisExtent: 200),
+                    crossAxisCount: 3, mainAxisSpacing: 12, crossAxisSpacing: 12, mainAxisExtent: 200),
                 itemBuilder: (context,index){
                   return Column(
                     children: [
-                      Image.asset(categoryImages[index], height: 120, width: 200, fit: BoxFit.cover),
-                      10.heightBox,
-                      categoriesList[index].text.color(darkFontGrey).align(TextAlign.center).make(),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Image.asset(categoryImages[index], width: double.infinity, fit: BoxFit.cover),
+                        ),
+                      ),
+                      8.heightBox,
+                      categoriesList[index].text.color(darkFontGrey).fontFamily(semibold).size(12).align(TextAlign.center).make(),
                     ],
-                  ).box.white.rounded.clip(Clip.antiAlias).outerShadowSm.make().onTap(() {
+                  ).box.color(lightGrey).withRounded(value: 16).padding(const EdgeInsets.all(8)).make().onTap(() {
                     controller.getSubCategories(categoriesList[index]);
                     Get.to(
                           () => CategoryDetails(title: categoriesList[index]),

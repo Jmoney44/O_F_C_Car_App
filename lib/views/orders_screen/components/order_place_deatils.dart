@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:ofcluxury_app/consts/consts.dart';
 
 Widget orderPlaceDetails({title1, title2, d1, d2}) {
@@ -11,7 +11,7 @@ Widget orderPlaceDetails({title1, title2, d1, d2}) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             "$title1".text.fontFamily(semibold).make(),
-            "$d1".text.color(redColor).fontFamily(semibold).make()
+            "$d1".text.color(primaryColor).fontFamily(semibold).make()
           ],
         ),
         SizedBox(

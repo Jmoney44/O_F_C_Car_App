@@ -14,10 +14,9 @@ Widget featuredButton({String? title, icon}) {
       .box
       .width(200)
       .margin(const EdgeInsets.symmetric(horizontal: 4))
-      .white
-      .padding(const EdgeInsets.all(4))
-      .roundedSM
-      .outerShadowSm
+      .color(lightGrey)
+      .padding(const EdgeInsets.all(6))
+      .withRounded(value: 14)
       .make()
       .onTap(() {
     Get.to(() => CategoryDetails(title: title));

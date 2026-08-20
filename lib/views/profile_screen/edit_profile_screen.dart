@@ -19,113 +19,108 @@ class EditProfileScreen extends StatelessWidget {
 
     return bgWidget(
         child: Scaffold(
-      appBar: AppBar(),
-      body: Obx(
-        () => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //if data image url and controller path is empty
-            data['imageUrl'] == '' && controller.profileImgPath.isEmpty
-                ? Image.asset(imgProfile2, width: 100, fit: BoxFit.cover)
-                    .box
-                    .roundedFull
-                    .clip(Clip.antiAlias)
-                    .make()
+      appBar: AppBar(
+        title: "Edit Profile".text.fontFamily(bold).color(darkFontGrey).make(),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Obx(
+          () => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //if data image url and controller path is empty
+              data['imageUrl'] == '' && controller.profileImgPath.isEmpty
+                  ? Image.asset(imgProfile2, width: 96, height: 96, fit: BoxFit.cover)
+                      .box
+                      .roundedFull
+                      .clip(Clip.antiAlias)
+                      .make()
 
-                // if data is not empty but controller path is empty
-                : data['imageUrl'] != '' && controller.profileImgPath.isEmpty
-                    ? Image.network(
-                        data['imageUrl'],
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ).box.roundedFull.clip(Clip.antiAlias).make()
+                  // if data is not empty but controller path is empty
+                  : data['imageUrl'] != '' && controller.profileImgPath.isEmpty
+                      ? Image.network(
+                          data['imageUrl'],
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                        ).box.roundedFull.clip(Clip.antiAlias).make()
 
-                    //else if controller path is not empty but data image url is
-                    : Image.file(
-                        File(controller.profileImgPath.value),
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ).box.roundedFull.clip(Clip.antiAlias).make(),
-            10.heightBox,
-            ourButton(
-                color: redColor,
-                onPress: () {
-                  controller.changeImage(context);
-                },
-                textColor: whiteColor,
-                title: "Change"),
-            const Divider(),
-            20.heightBox,
-            customTextField(
-              controller: controller.nameController,
-              hint: nameHint,
-              title: name,
-              isPass: false,
-            ),
-            10.heightBox,
-            customTextField(
-              controller: controller.oldpassController,
-              hint: passwordHint,
-              title: oldpass,
-              isPass: true,
-            ),
-            10.heightBox,
-            customTextField(
-              controller: controller.newpassController,
-              hint: passwordHint,
-              title: newpass,
-              isPass: true,
-            ),
-            20.heightBox,
-            controller.isloading.value
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(redColor),
-                  )
-                : SizedBox(
-                    width: context.screenWidth - 60,
-                    child: ourButton(
-                        color: redColor,
-                        onPress: () async {
-                          controller.isloading(true);
+                      //else if controller path is not empty but data image url is
+                      : Image.file(
+                          File(controller.profileImgPath.value),
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                        ).box.roundedFull.clip(Clip.antiAlias).make(),
+              12.heightBox,
+              "Change photo".text.fontFamily(semibold).color(darkFontGrey).make().onTap(() {
+                controller.changeImage(context);
+              }),
+              24.heightBox,
+              customTextField(
+                controller: controller.nameController,
+                hint: nameHint,
+                title: name,
+                icon: Icons.person_outline_rounded,
+                isPass: false,
+              ),
+              customTextField(
+                controller: controller.oldpassController,
+                hint: passwordHint,
+                title: oldpass,
+                icon: Icons.lock_outline_rounded,
+                isPass: true,
+              ),
+              customTextField(
+                controller: controller.newpassController,
+                hint: passwordHint,
+                title: newpass,
+                icon: Icons.lock_outline_rounded,
+                isPass: true,
+              ),
+              12.heightBox,
+              controller.isloading.value
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(primaryColor),
+                    )
+                  : ourButton(
+                      color: primaryColor,
+                      onPress: () async {
+                        controller.isloading(true);
 
-                          //if image is not selected
-                          if (controller.profileImgPath.value.isNotEmpty) {
-                            await controller.uploadProfileImage();
-                          } else {
-                            controller.profileImageLink = data['imageUrl'];
-                          }
+                        //if image is not selected
+                        if (controller.profileImgPath.value.isNotEmpty) {
+                          await controller.uploadProfileImage();
+                        } else {
+                          controller.profileImageLink = data['imageUrl'];
+                        }
 
-                          //if old password matches data base
-                          if (data['password'] ==
-                              controller.oldpassController.text) {
-                            await controller.changeAuthPassword(
-                                email: data['email'],
-                                password: controller.oldpassController.text,
-                                newpassword: controller.newpassController.text);
+                        //if old password matches data base
+                        if (data['password'] ==
+                            controller.oldpassController.text) {
+                          await controller.changeAuthPassword(
+                              email: data['email'],
+                              password: controller.oldpassController.text,
+                              newpassword: controller.newpassController.text);
 
-                            await controller.updateProfile(
-                                imgUrl: controller.profileImageLink,
-                                name: controller.nameController.text,
-                                password: controller.newpassController.text);
-                            // ignore: use_build_context_synchronously
-                            VxToast.show(context, msg: "Updated");
-                          } else {
-                            // ignore: use_build_context_synchronously
-                            VxToast.show(context, msg: "Wrong Old Password");
-                            controller.isloading(false);
-                          }
-                        },
-                        textColor: whiteColor,
-                        title: "Save")),
-          ],
-        )
-            .box
-            .white
-            .shadowSm
-            .padding(const EdgeInsets.all(16))
-            .margin(const EdgeInsets.only(top: 50, left: 12, right: 12))
-            .rounded
-            .make(),
+                          await controller.updateProfile(
+                              imgUrl: controller.profileImageLink,
+                              name: controller.nameController.text,
+                              password: controller.newpassController.text);
+                          // ignore: use_build_context_synchronously
+                          VxToast.show(context, msg: "Updated");
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          VxToast.show(context, msg: "Wrong Old Password");
+                          controller.isloading(false);
+                        }
+                      },
+                      textColor: whiteColor,
+                      title: "Save"),
+              20.heightBox,
+            ],
+          ),
+        ),
       ),
     ));
   }

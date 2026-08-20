@@ -29,8 +29,23 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: appname,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.transparent,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent),
+        useMaterial3: true,
+        scaffoldBackgroundColor: whiteColor,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
+          brightness: Brightness.light,
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: whiteColor,
+          surfaceTintColor: whiteColor,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: darkFontGrey),
+          titleTextStyle: TextStyle(
+            fontFamily: bold,
+            color: darkFontGrey,
+            fontSize: 18,
+          ),
+        ),
         fontFamily: regular,
       ),
       home: const SplashScreen(),
