@@ -50,6 +50,11 @@ Sign in with any email and password. Use an email containing `admin` (for
 example `admin@ofc.com`) to see the admin area. Demo data is reset every time
 the app restarts, and photo upload is switched off.
 
+The sample cars use photos from Wikimedia Commons, bundled in `assets/demo/`
+and credited in `assets/demo/CREDITS.md`. They add about 2 MB to the app;
+delete that folder and its `pubspec.yaml` entry before release if you do not
+want to ship them.
+
 ## Connect your Firebase project
 
 1. Create a project in the [Firebase console](https://console.firebase.google.com).

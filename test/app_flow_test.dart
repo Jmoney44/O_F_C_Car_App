@@ -36,7 +36,7 @@ void main() {
     expect(find.text('Hello, Jo'), findsOneWidget);
     expect(find.text('Featured'), findsOneWidget);
 
-    await tester.tap(find.text('2024 Mercedes-Benz S 580').first);
+    await tester.tap(find.text('2024 Mercedes-Benz S 580 e').first);
     await tester.pumpAndSettle();
     expect(find.text('Make an offer'), findsOneWidget);
 
@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Reservation requested'), findsOneWidget);
 
     final orders = await repositories.orders.watchAllOrders().first;
-    expect(orders.single.carTitle, '2024 Mercedes-Benz S 580');
+    expect(orders.single.carTitle, '2024 Mercedes-Benz S 580 e');
     expect(orders.single.status, OrderStatus.pending);
 
     // The showroom confirming the order takes the car off sale.

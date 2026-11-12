@@ -93,7 +93,31 @@ class _CarDetails extends ConsumerWidget {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: _Gallery(imageUrls: car.imageUrls),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _Gallery(imageUrls: car.imageUrls),
+                  // Keeps the back and action buttons readable on any photo.
+                  IgnorePointer(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        height: 110,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              theme.colorScheme.surface.withValues(alpha: 0.85),
+                              theme.colorScheme.surface.withValues(alpha: 0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SliverPadding(

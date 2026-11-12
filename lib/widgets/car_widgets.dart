@@ -9,6 +9,7 @@ import '../providers.dart';
 import 'common.dart';
 
 /// A car photo, or a neutral placeholder when there is none or it fails.
+/// [url] is a web address, or an `assets/` path for a bundled photo.
 class CarImage extends StatelessWidget {
   const CarImage({super.key, required this.url, this.iconSize = 48});
 
@@ -29,6 +30,14 @@ class CarImage extends StatelessWidget {
       ),
     );
     if (url == null || url!.isEmpty) return placeholder;
+    // Photos bundled with the app (the demo cars) rather than downloaded.
+    if (url!.startsWith('assets/')) {
+      return Image.asset(
+        url!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => placeholder,
+      );
+    }
     return CachedNetworkImage(
       imageUrl: url!,
       fit: BoxFit.cover,
