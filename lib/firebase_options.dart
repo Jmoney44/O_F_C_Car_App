@@ -1,8 +1,8 @@
 // Connection settings for the "ofccar" Firebase project.
 //
-// Android is connected. On platforms that are not registered yet (iOS, web)
-// the app runs in demo mode on sample data. To add one, register the app in
-// the Firebase console and add its options below, or run
+// Android and iOS are connected. On platforms that are not registered yet
+// (web, desktop) the app runs in demo mode on sample data. To add one,
+// register the app in the Firebase console and add its options below, or run
 // `flutterfire configure`, which regenerates this whole file.
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -15,6 +15,7 @@ class DefaultFirebaseOptions {
     }
     return switch (defaultTargetPlatform) {
       TargetPlatform.android => android,
+      TargetPlatform.iOS => ios,
       _ => throw UnsupportedError(
         'Firebase is not configured for this platform yet.',
       ),
@@ -29,5 +30,14 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1047570474841',
     projectId: 'ofccar',
     storageBucket: 'ofccar.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDjjoobV8kXgQUjuXavk77Fr_6RHC9EkT8',
+    appId: '1:1047570474841:ios:d17b4eac2baf0d1b52ce48',
+    messagingSenderId: '1047570474841',
+    projectId: 'ofccar',
+    storageBucket: 'ofccar.firebasestorage.app',
+    iosBundleId: 'com.ofcgroup.ofcLuxury',
   );
 }

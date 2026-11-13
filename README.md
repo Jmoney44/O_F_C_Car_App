@@ -35,7 +35,7 @@ confirms it and takes payment directly.
 
 ## Demo mode
 
-On platforms without Firebase settings (currently iOS and web) the app runs on
+On platforms without Firebase settings (currently web) the app runs on
 built-in sample cars, so you can see every screen without a backend:
 
 ```bash
@@ -58,8 +58,8 @@ want to ship them.
 ## Firebase
 
 The app is connected to the Firebase project **`ofccar`** on **Android**
-(`lib/firebase_options.dart`). iOS and web are not registered yet and run in
-demo mode.
+and **iOS** (`lib/firebase_options.dart`). Web is not registered yet and runs
+in demo mode.
 
 In the [Firebase console](https://console.firebase.google.com) the project
 needs:
@@ -97,9 +97,9 @@ change `role` from `customer` to `admin`. The admin area appears in the
 Account tab immediately. Customers cannot change their own role; this is
 enforced by `firestore.rules`.
 
-**Adding iOS or web:** register the app in the console (iOS bundle ID
-`com.ofcgroup.ofcLuxury`) and add its options to `lib/firebase_options.dart`,
-or run `flutterfire configure` to regenerate the file for every platform.
+**Adding web:** register a web app in the console and add its options to
+`lib/firebase_options.dart`, or run `flutterfire configure` to regenerate the
+file for every platform.
 
 ## Settings to change before release
 
