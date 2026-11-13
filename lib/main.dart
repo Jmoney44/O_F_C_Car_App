@@ -1,54 +1,35 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:ofcluxury_app/consts/app_consts.dart';
-import 'package:ofcluxury_app/views/splash_screen/splash_screen.dart';
-import 'consts/consts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 
-void main() async {
+import 'app.dart';
+import 'data/demo/demo_repositories.dart';
+import 'data/firebase/firebase_repositories.dart';
+import 'data/repositories.dart';
+import 'firebase_options.dart';
+import 'providers.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: FirebaseOptions(
-    apiKey: AppConsts.apikey,
-    appId: AppConsts.appId,
-    messagingSenderId: AppConsts.messagingSenderId,
-    projectId: AppConsts.projectId,
-    storageBucket: AppConsts.storagebucket,
-  ));
-  runApp(const MyApp());
+  final repositories = await _connect();
+  runApp(
+    ProviderScope(
+      overrides: [repositoriesProvider.overrideWithValue(repositories)],
+      child: const OfcApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    //we are using getX so we have to change this material app into getmaterialapp
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: appname,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: whiteColor,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: Brightness.light,
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: whiteColor,
-          surfaceTintColor: whiteColor,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: darkFontGrey),
-          titleTextStyle: TextStyle(
-            fontFamily: bold,
-            color: darkFontGrey,
-            fontSize: 18,
-          ),
-        ),
-        fontFamily: regular,
-      ),
-      home: const SplashScreen(),
-    );
+/// Uses Firebase once `flutterfire configure` has generated the real
+/// `firebase_options.dart`; until then falls back to in-memory sample data.
+Future<Repositories> _connect() async {
+  final FirebaseOptions options;
+  try {
+    options = DefaultFirebaseOptions.currentPlatform;
+  } on UnsupportedError {
+    debugPrint('Firebase is not configured: running in demo mode.');
+    return demoRepositories();
   }
+  await Firebase.initializeApp(options: options);
+  return firebaseRepositories();
 }

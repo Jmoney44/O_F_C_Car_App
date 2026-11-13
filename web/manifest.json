@@ -1,11 +1,11 @@
 {
-    "name": "ofcluxury_app",
-    "short_name": "ofcluxury_app",
+    "name": "OFC Luxury",
+    "short_name": "OFC Luxury",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#17181C",
+    "theme_color": "#17181C",
+    "description": "OFC Luxury - browse, scan and reserve cars from the OFC showroom.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

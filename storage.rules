@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Car photos: any signed-in user can view, only admins can add or remove.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /cars/{carId}/{fileName} {
+      function isAdmin() {
+        return request.auth != null
+          && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      }
+
+      allow read: if request.auth != null;
+      allow create, update: if isAdmin()
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+  }
+}

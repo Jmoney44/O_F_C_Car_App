@@ -1,0 +1,91 @@
+rules_version = '2';
+
+// Security rules for OFC Luxury. These, not the app, are what protect the
+// data: deploy them with `firebase deploy --only firestore:rules`.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // An admin is a user whose profile has role == 'admin'. Customers cannot
+    // set or change their own role, so the first admin is made in the
+    // Firebase console (see README).
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'customer') == 'admin';
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid)
+        && request.resource.data.get('role', 'customer') == 'customer';
+      allow update: if isOwner(uid)
+        && request.resource.data.get('role', 'customer') == resource.data.get('role', 'customer');
+      allow delete: if false;
+
+      match /favorites/{carId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    match /cars/{carId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /offers/{offerId} {
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.reply == ''
+        && request.resource.data.amount is int
+        && request.resource.data.amount > 0;
+      // Only the showroom answers an offer.
+      allow update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      function car(carId) {
+        return get(/databases/$(database)/documents/cars/$(carId)).data;
+      }
+
+      function offer(offerId) {
+        return get(/databases/$(database)/documents/offers/$(offerId)).data;
+      }
+
+      // The price must be the car's list price, or the amount of this
+      // customer's own accepted offer for this car.
+      function priceIsHonest(order) {
+        return order.get('offerId', null) == null
+          ? order.price == car(order.carId).price
+          : offer(order.offerId).status == 'accepted'
+            && offer(order.offerId).userId == request.auth.uid
+            && offer(order.offerId).carId == order.carId
+            && offer(order.offerId).amount == order.price;
+      }
+
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && car(request.resource.data.carId).status == 'available'
+        && priceIsHonest(request.resource.data);
+      // The showroom moves orders along. A customer may only withdraw a
+      // request that has not been confirmed yet.
+      allow update: if isAdmin()
+        || (resource.data.userId == request.auth.uid
+            && resource.data.status == 'pending'
+            && request.resource.data.status == 'cancelled'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+  }
+}
