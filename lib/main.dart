@@ -20,8 +20,8 @@ Future<void> main() async {
   );
 }
 
-/// Uses Firebase once `flutterfire configure` has generated the real
-/// `firebase_options.dart`; until then falls back to in-memory sample data.
+/// Uses Firebase on platforms that `firebase_options.dart` has settings for;
+/// on any other platform falls back to in-memory sample data.
 Future<Repositories> _connect() async {
   final FirebaseOptions options;
   try {

@@ -1,17 +1,43 @@
-// PLACEHOLDER. Replace this file by running, from the project folder:
+// Connection settings for the "ofccar" Firebase project.
 //
-//   dart pub global activate flutterfire_cli
-//   flutterfire configure
-//
-// That command connects the app to your Firebase project and overwrites this
-// file with the real settings. Until then the app runs in demo mode on
-// sample data. See README.md for the full setup steps.
+// Android and iOS are connected. On platforms that are not registered yet
+// (web, desktop) the app runs in demo mode on sample data. To add one,
+// register the app in the Firebase console and add its options below, or run
+// `flutterfire configure`, which regenerates this whole file.
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    throw UnsupportedError(
-      'Firebase is not configured yet. Run "flutterfire configure".',
-    );
+    if (kIsWeb) {
+      throw UnsupportedError('Firebase is not configured for web yet.');
+    }
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android => android,
+      TargetPlatform.iOS => ios,
+      _ => throw UnsupportedError(
+        'Firebase is not configured for this platform yet.',
+      ),
+    };
   }
+
+  // These values identify the project; they are not secrets. Access to data
+  // is controlled by firestore.rules and storage.rules.
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyD0nX_GWvsXIApUQRfaulsxFwh8LQodCwU',
+    appId: '1:1047570474841:android:c1f01b623a3c6e5352ce48',
+    messagingSenderId: '1047570474841',
+    projectId: 'ofccar',
+    storageBucket: 'ofccar.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDjjoobV8kXgQUjuXavk77Fr_6RHC9EkT8',
+    appId: '1:1047570474841:ios:d17b4eac2baf0d1b52ce48',
+    messagingSenderId: '1047570474841',
+    projectId: 'ofccar',
+    storageBucket: 'ofccar.firebasestorage.app',
+    iosBundleId: 'com.ofcgroup.ofcLuxury',
+  );
 }

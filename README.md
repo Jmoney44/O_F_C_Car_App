@@ -33,10 +33,10 @@ orders and offers.
 No money moves inside the app. A reservation is a request; the showroom
 confirms it and takes payment directly.
 
-## Try it without Firebase (demo mode)
+## Demo mode
 
-Until Firebase is connected the app runs on built-in sample cars, so you can
-see every screen straight away:
+On platforms without Firebase settings (currently web) the app runs on
+built-in sample cars, so you can see every screen without a backend:
 
 ```bash
 flutter pub get
@@ -55,44 +55,51 @@ and credited in `assets/demo/CREDITS.md`. They add about 2 MB to the app;
 delete that folder and its `pubspec.yaml` entry before release if you do not
 want to ship them.
 
-## Connect your Firebase project
+## Firebase
 
-1. Create a project in the [Firebase console](https://console.firebase.google.com).
-2. In the project, turn on:
-   - **Authentication** → Sign-in method → **Email/Password**
-   - **Firestore Database** (production mode)
-   - **Storage**
-3. Install the tools and connect the app. This overwrites
-   `lib/firebase_options.dart` with your project's settings:
+The app is connected to the Firebase project **`ofccar`** on **Android**
+and **iOS** (`lib/firebase_options.dart`). Web is not registered yet and runs
+in demo mode.
 
-   ```bash
-   npm install -g firebase-tools
-   ```
+In the [Firebase console](https://console.firebase.google.com) the project
+needs:
 
-   ```bash
-   firebase login
-   ```
+- **Authentication** → Sign-in method → **Email/Password** enabled
+- **Firestore Database** created (production mode)
+- **Storage** enabled (needed for car photos)
 
-   ```bash
-   dart pub global activate flutterfire_cli
-   ```
+Install the security rules and indexes from this repo. Either deploy them:
 
-   ```bash
-   flutterfire configure
-   ```
+```bash
+npm install -g firebase-tools
+```
 
-4. Deploy the security rules and indexes from this repo:
+```bash
+firebase login
+```
 
-   ```bash
-   firebase deploy --only firestore,storage
-   ```
+```bash
+firebase deploy --only firestore,storage
+```
 
-5. Run the app and create your own account with **Create an account**.
-6. Make yourself the first admin: in the Firebase console open
-   **Firestore → users → (your user document)** and change `role` from
-   `customer` to `admin`. The admin area appears in the Account tab
-   immediately. Customers cannot change their own role; this is enforced by
-   `firestore.rules`.
+or copy the contents of `firestore.rules` into **Firestore → Rules** (and
+`storage.rules` into **Storage → Rules**) in the console and publish. Without
+the rules the app cannot read or write anything, or is open to everyone,
+depending on how the database was created.
+
+When deploying is not possible, the two indexes in `firestore.indexes.json`
+can be created from the link Firebase prints in the app log the first time
+"My orders" or "My offers" is opened.
+
+**First admin:** run the app, create your account with **Create an account**,
+then in the console open **Firestore → users → (your user document)** and
+change `role` from `customer` to `admin`. The admin area appears in the
+Account tab immediately. Customers cannot change their own role; this is
+enforced by `firestore.rules`.
+
+**Adding web:** register a web app in the console and add its options to
+`lib/firebase_options.dart`, or run `flutterfire configure` to regenerate the
+file for every platform.
 
 ## Settings to change before release
 
